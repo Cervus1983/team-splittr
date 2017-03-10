@@ -8,19 +8,19 @@ source("splitte.R")
 
 
 cache <- list(df = NULL, split = NULL)
+n <- 0
 
 
 shinyApp(
 	shinyUI(
 		fluidPage(
-			fluidRow(
-				column(3, rHandsontableOutput("players", width = 205)),
-				column(
-					5,
-					rHandsontableOutput("teams", width = 410),
-					br(),
-					actionButton("random", "Randomise")
-				)
+			fixedPanel(rHandsontableOutput("players"), top = 20, left = 40),
+			fixedPanel(
+				rHandsontableOutput("teams"),
+				br(),
+				textOutput("caption", inline = TRUE),
+				actionButton("counter", "Next"),
+				top = 20, left = 278
 			)
 		)
 	),
@@ -30,14 +30,14 @@ shinyApp(
 		values <- reactiveValues()
 
 		players <- reactive({
-			cat("PLAYERS\n")
+			#cat("PLAYERS\n")
 			if (!is.null(input$players)) {
-				cat("df <- hot_to_r(input$players)\n")
+				#cat("df <- hot_to_r(input$players)\n")
 				df <- hot_to_r(input$players)
 				
 			} else {
 				if(is.null(values[["df"]])) {
-					cat("df <- getBokat...\n")
+					#cat("df <- getBokat...\n")
 					df <- getBokat(92452290844323)
 
 					# parse number of guests & extract names
@@ -60,7 +60,7 @@ shinyApp(
 						select(playing, name) %>% 
 						arrange(name)
 				} else {
-					cat("df <- values[[\"df\"]]\n")
+					#cat("df <- values[[\"df\"]]\n")
 					df <- values[["df"]]
 				}
 			}
@@ -77,10 +77,7 @@ shinyApp(
 			if(!identical(df, cache$df)) {
 				cache <<- list(
 					df = df,
-					split = lapply(
-						strsplit(split(df), " "),
-						as.integer
-					)
+					split = split(df %>% filter(playing))
 				)
 			}
 			
@@ -102,8 +99,7 @@ shinyApp(
 			df <- players()
 			ss <- splits()
 			
-			input$random
-			x <- ss[[sample(1:length(ss), 1)]]
+			x <- ss[[input$counter %% length(ss) + 1]]
 			
 			if(!is.null(df) & length(x) > 0) {
 				df %<>% filter(playing)
@@ -117,6 +113,17 @@ shinyApp(
 					rhandsontable(colHeaders = c("black", "white"), readOnly = TRUE, rowHeaders = NULL) %>% 
 					hot_rows(rowHeights = 24)
 			}
+		})
+		
+		output$caption <- renderText({
+			ss <- splits()
+
+			paste(
+				input$counter %% length(ss) + 1,
+				"out of",
+				length(ss),
+				"\t"
+			)
 		})
 	})
 )
