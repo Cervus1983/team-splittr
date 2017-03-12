@@ -14,14 +14,12 @@ n <- 0
 shinyApp(
 	shinyUI(
 		fluidPage(
-			fixedPanel(rHandsontableOutput("players"), top = 20, left = 40),
-			fixedPanel(
-				rHandsontableOutput("teams"),
-				br(),
-				textOutput("caption", inline = TRUE),
-				actionButton("counter", "Next"),
-				top = 20, left = 278
-			)
+			theme = "style.css",
+			rHandsontableOutput("players", width = 198),
+			rHandsontableOutput("teams", width = 297),
+			br(),
+			textOutput("caption", inline = TRUE),
+			actionButton("counter", "Next")
 		)
 	),
 	
