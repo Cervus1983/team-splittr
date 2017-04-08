@@ -3,9 +3,9 @@ title: split
 account: cervus1983
 server: shinyapps.io
 appId: 162864
-bundleId: 743060
+bundleId: 781660
 url: https://cervus1983.shinyapps.io/split/
-when: 1489276307.38536
+when: 1491643600.27628
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .RData
+ignoredFiles: .gitattributes|.RData

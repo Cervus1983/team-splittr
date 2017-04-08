@@ -7,6 +7,9 @@ source("Bokat.R")
 source("splitte.R")
 
 
+options(encoding = "UTF-8")
+
+
 cache <- list(df = NULL, split = NULL)
 n <- 0
 
@@ -18,8 +21,10 @@ shinyApp(
 			rHandsontableOutput("players", width = 198),
 			rHandsontableOutput("teams", width = 297),
 			br(),
+			actionButton("back", "prev"),
 			textOutput("caption", inline = TRUE),
-			actionButton("counter", "Next")
+			actionButton("forward", "next"),
+			actionButton("random", "random")
 		)
 	),
 	
@@ -97,7 +102,8 @@ shinyApp(
 			df <- players()
 			ss <- splits()
 			
-			x <- ss[[input$counter %% length(ss) + 1]]
+			set.seed(input$random)
+			x <- ss[[(input$forward - input$back + round(length(ss) * runif(1))) %% length(ss) + 1]]
 			
 			if(!is.null(df) & length(x) > 0) {
 				df %<>% filter(playing)
@@ -116,8 +122,10 @@ shinyApp(
 		output$caption <- renderText({
 			ss <- splits()
 
+			set.seed(input$random)
+
 			paste(
-				input$counter %% length(ss) + 1,
+				(input$forward - input$back + round(length(ss) * runif(1))) %% length(ss) + 1,
 				"out of",
 				length(ss),
 				"\t"
